@@ -1,0 +1,15 @@
+{# ./templates/default/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+ {% block title %} Iza Management {% endblock %}
+
+ {% block body %}
+
+    {% if app.request.get('message') %}
+        <div class='hidden' id='euMsg'>{{ app.request.get('message') }}</div>
+    {% endif %}
+
+     <div id="root"></div>
+
+ {% endblock %}
