@@ -28,3 +28,4 @@ yarn-error.log
 yarn.lock
 symfony.lock
 composer.lock
+/.idea
