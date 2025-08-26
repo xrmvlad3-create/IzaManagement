@@ -1,6 +1,5 @@
 import React from 'react';
-import {Redirect} from 'react-router-dom';
-import {useLocation} from 'react-router-dom';
+import {useLocation, Navigate} from 'react-router-dom';
 
 interface Props {
     children: React.ReactNode
@@ -18,7 +17,7 @@ export const PrivateRoute = ({children}: Props) => {
     }
 
     return isLogged() ? children :
-        <Redirect push to={"/login?to=" + localStorage.getItem("redirect")} from={location['pathname']}/>
+        <Navigate to={"/login?to=" + localStorage.getItem("redirect")}/>
 };
 
 export default PrivateRoute;
