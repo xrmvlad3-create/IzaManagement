@@ -1,4 +1,5 @@
 <?php
+// src/Controller/ZzDefaultController.php
 
 namespace App\Controller;
 
@@ -8,9 +9,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ZzDefaultController extends AbstractController
 {
-    #[Route("/{reactRouting}", name: "home", defaults: ["reactRouting" => null])]
+    #[Route('/{reactRouting?}', name: 'home', requirements: ['reactRouting' => '^(?!api|login|_profiler|_wdt).+'], defaults: ['reactRouting' => null])]
     public function index(): Response
     {
-        return $this->render('default/index.html.twig');
+        // Redăm fișierul de bază care conține <div id="root"> și tag-urile Encore
+        return $this->render('base.html.twig');
     }
 }

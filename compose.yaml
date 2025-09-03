@@ -1,13 +1,14 @@
-
 services:
-###> doctrine/doctrine-bundle ###
+  ###> Serviciul de Bază de Date (PostgreSQL) ###
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
       POSTGRES_USER: ${POSTGRES_USER:-app}
+    ports:
+      # Expune portul PostgreSQL pe 5433 pentru a evita conflictele locale
+      - "${POSTGRES_PORT:-5433}:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
       timeout: 5s
@@ -15,11 +16,29 @@ services:
       start_period: 60s
     volumes:
       - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
 
+  ###> Serviciul de Stocare Fișiere (MinIO) ###
+  minio:
+    image: minio/minio:latest
+    ports:
+      # Port pentru accesul API (folosit de Symfony)
+      - "9000:9000"
+      # Port pentru consola web a MinIO
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# La nivelul superior al fișierului, definește volumele
 volumes:
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
+  minio_data:
+    driver: local

@@ -1,0 +1,5 @@
+# config/routes/api.yaml
+api_controllers:
+    resource: ../../src/Api/ # Sau ../../src/Controller/Api/ dacă acolo sunt controllerele
+    type: attribute
+    prefix: /api

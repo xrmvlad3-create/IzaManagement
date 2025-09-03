@@ -14,6 +14,7 @@ Encore
     .enableReactPreset()
     .addEntry("app", "./assets/app.tsx")
     .splitEntryChunks()
+    // Aceasta este forma corectă, fără opțiuni de excludere
     .enableTypeScriptLoader()
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
@@ -39,7 +40,7 @@ Encore
     })
 
     .addPlugin(new webpack.DefinePlugin({
-        'process.env.REACT_APP_SECURE_LOCAL_STORAGE_HASH_KEY': 'w7VPCVigoNFwyjlsSKkkjOW8XFh78T4O',
+        'process.env.REACT_APP_SECURE_LOCAL_STORAGE_HASH_KEY': JSON.stringify('w7VPCVigoNFwyjlsSKkkjOW8XFh78T4O'),
         'process.env.REACT_APP_BACKEND_URL': JSON.stringify('https://localhost:8000'),
         'process.env.REACT_APP_BACKEND_API_URL': JSON.stringify('https://localhost:8000/api/'),
     }))

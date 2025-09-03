@@ -1,0 +1,46 @@
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+
+// Hook-ul pentru autentificare rămâne la fel
+const useAuth = () => {
+    const cookie = document.cookie.includes('BEARER=');
+    return { isAuthenticated: cookie };
+};
+
+/**
+ * Aceasta este componenta care trebuie corectată.
+ * Deoarece PrivateRoute este folosit ca <PrivateRoute>ComponentaCopil</PrivateRoute>,
+ * ea trebuie să știe ce să facă cu "ComponentaCopil".
+ *
+ * <Outlet /> din react-router-dom v6 este soluția modernă, dar dacă PrivateRoute
+ * este folosit pentru a înveli o singură componentă, trebuie să acceptăm `children`.
+ *
+ * Cea mai curată abordare este să folosim `<Outlet />` în structura de rutare
+ * și să nu mai învelim fiecare componentă manual.
+ *
+ * VOM REFACTORIZA BasePage PENTRU A FOLOSI ACEASTĂ ABORDARE MAI CURATĂ.
+ */
+
+// Nu mai avem nevoie de o componentă PrivateRoute separată care învelește copii.
+// Logica va fi integrată direct în definirea rutelor.
+
+// Pentru moment, să corectăm totuși PrivateRoute pentru a rezolva eroarea.
+
+interface PrivateRouteProps {
+    children: React.ReactNode;
+}
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+    const { isAuthenticated } = useAuth();
+
+    // Dacă nu e autentificat, redirecționează la login.
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    // Dacă e autentificat, randează componenta copil.
+    return <>{children}</>;
+};
+
+
+export default PrivateRoute;
