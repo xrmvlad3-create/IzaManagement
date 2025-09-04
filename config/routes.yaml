@@ -1,5 +1,13 @@
+# config/routes.yaml
+
+# Încarcă automat toate rutele definite prin atribute PHP în controllerele din directorul src/Controller/
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+# Definirea explicită a rutei de login pentru a fi interceptată de firewall-ul de securitate.
+api_login_check:
+    path: /api/login_check
+    methods: ['POST']

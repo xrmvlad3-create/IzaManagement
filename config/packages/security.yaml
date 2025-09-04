@@ -14,25 +14,19 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # Firewall PUBLIC pentru obținerea token-ului de autentificare
         login:
-            pattern:  ^/api/login
+            pattern:  ^/api/login_check
             stateless: true
             json_login:
                 check_path: /api/login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-        # Firewall PROTEJAT pentru restul API-ului, care validează token-ul
         api:
             pattern:   ^/api
             stateless: true
-            jwt: ~ # Activează validarea JWT pentru orice începe cu /api
+            jwt: ~
 
     access_control:
-        # Permite accesul public (fără token) DOAR la ruta de login
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-
-        # Pentru ORICE ALTCEVA care începe cu /api, cere un rol.
-        # Poți deveni mai specific aici, ex: roles: ROLE_DOCTOR
+        - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
