@@ -1,13 +1,11 @@
-when@dev:
-    web_profiler:
-        toolbar: true
+# config/packages/web_profiler.yaml
+web_profiler:
+    toolbar: true
+    intercept_redirects: false
+    # Adăugați aceste linii
+    excluded_ajax_paths: '^/api/'
 
-    framework:
-        profiler:
-            collect_serializer_data: true
-
-when@test:
-    framework:
-        profiler:
-            collect: false
-            collect_serializer_data: true
+framework:
+    profiler:
+        # Această opțiune este importantă pentru a colecta date
+        collect: true

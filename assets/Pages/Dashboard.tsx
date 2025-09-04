@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom'; // Asigură-te că ai react-router-dom instalat
+import { Link } from 'react-router-dom';
 import { useSpecialty } from '../context/SpecialtyContext';
-import { getDashboardStats, getRecentProcedures } from '../services/api'; // Presupunem că aceste funcții vor fi create
+import { getDashboardStats, getRecentProcedures } from '../services/api';
+import SpecialtySelector from '../components/SpecialtySelector';
 
 // --- Stiluri (pot fi mutate într-un fișier CSS separat) ---
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
     dashboard: { fontFamily: 'sans-serif', padding: '24px' },
     header: { marginBottom: '32px' },
     cardContainer: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' },
@@ -31,74 +32,97 @@ interface RecentProcedure {
 }
 
 const Dashboard: React.FC = () => {
-    const { selectedSpecialty, userSpecialties } = useSpecialty();
+    const { selectedSpecialty, isLoading: isContextLoading } = useSpecialty();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentProcedures, setRecentProcedures] = useState<RecentProcedure[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [isDataLoading, setIsDataLoading] = useState(true);
 
     useEffect(() => {
-        const specialtyToFetch = selectedSpecialty || (userSpecialties.length > 0 ? userSpecialties[0] : null);
-
-        if (specialtyToFetch) {
-            setLoading(true);
+        // Încărcăm datele specifice dashboard-ului doar după ce contextul este gata și avem o specialitate
+        if (!isContextLoading && selectedSpecialty) {
+            setIsDataLoading(true);
             Promise.all([
-                getDashboardStats(specialtyToFetch),
-                getRecentProcedures(specialtyToFetch)
+                getDashboardStats(selectedSpecialty),
+                getRecentProcedures(selectedSpecialty)
             ]).then(([fetchedStats, fetchedProcedures]) => {
                 setStats(fetchedStats);
                 setRecentProcedures(fetchedProcedures);
             }).catch(error => {
                 console.error("Failed to load dashboard data:", error);
             }).finally(() => {
-                setLoading(false);
+                setIsDataLoading(false);
             });
         }
-    }, [selectedSpecialty, userSpecialties]);
+    }, [selectedSpecialty, isContextLoading]);
 
-    if (loading) {
-        return <div>Încărcare Dashboard...</div>;
+    // Starea de încărcare inițială, cât timp se încarcă profilul din context
+    if (isContextLoading) {
+        return (
+            <div style={styles.dashboard}>
+                <h1>Dashboard</h1>
+                <p>Se inițializează aplicația, se încarcă profilul utilizatorului...</p>
+            </div>
+        );
     }
 
+    // Starea de eroare dacă nu s-a putut încărca profilul/specialitățile
+    if (!selectedSpecialty) {
+        return (
+            <div style={styles.dashboard}>
+                <h1>Eroare</h1>
+                <p>Nu am putut încărca specialitățile. Vă rugăm contactați suportul.</p>
+                <Link to="/login" style={styles.link}>Mergi la pagina de Login</Link>
+            </div>
+        );
+    }
+
+    // Acum afișăm conținutul real
     return (
         <div style={styles.dashboard}>
             <header style={styles.header}>
                 <h1>Dashboard</h1>
-                <p>Bine ai venit! Specialitatea curentă: <strong>{selectedSpecialty || 'N/A'}</strong></p>
+                <SpecialtySelector />
             </header>
 
-            <div style={styles.cardContainer}>
-                <div style={styles.card}>
-                    <h2 style={styles.cardTitle}>Cazuri în Specialitate</h2>
-                    <p style={styles.cardValue}>{stats?.totalCasesInSpecialty ?? 'N/A'}</p>
-                </div>
-                <div style={styles.card}>
-                    <h2 style={styles.cardTitle}>Proceduri în Specialitate</h2>
-                    <p style={styles.cardValue}>{stats?.totalProceduresInSpecialty ?? 'N/A'}</p>
-                </div>
-                <div style={styles.card}>
-                    <h2 style={styles.cardTitle}>Proceduri Noi (30 zile)</h2>
-                    <p style={styles.cardValue}>{stats?.newProceduresLast30Days ?? 'N/A'}</p>
-                </div>
-            </div>
-
-            <section style={styles.quickLinks}>
-                <h3>Acces Rapid</h3>
-                <Link to="/clinical-cases" style={styles.link}>→ Vezi Biblioteca Clinică</Link>
-                <Link to="/profile" style={styles.link}>→ Profilul Meu</Link>
-            </section>
-
-            <section style={styles.recentActivity}>
-                <h3>Activitate Recentă ({selectedSpecialty})</h3>
-                {recentProcedures.length > 0 ? (
-                    recentProcedures.map(proc => (
-                        <div key={proc.id} style={styles.activityItem}>
-                            Procedură nouă adăugată: <strong>{proc.name}</strong>
+            {isDataLoading ? (
+                <p>Se încarcă datele pentru specialitatea {selectedSpecialty}...</p>
+            ) : (
+                <>
+                    <div style={styles.cardContainer}>
+                        <div style={styles.card}>
+                            <h2 style={styles.cardTitle}>Cazuri în Specialitate</h2>
+                            <p style={styles.cardValue}>{stats?.totalCasesInSpecialty ?? 'N/A'}</p>
                         </div>
-                    ))
-                ) : (
-                    <p>Nicio procedură nouă adăugată recent.</p>
-                )}
-            </section>
+                        <div style={styles.card}>
+                            <h2 style={styles.cardTitle}>Proceduri în Specialitate</h2>
+                            <p style={styles.cardValue}>{stats?.totalProceduresInSpecialty ?? 'N/A'}</p>
+                        </div>
+                        <div style={styles.card}>
+                            <h2 style={styles.cardTitle}>Proceduri Noi (30 zile)</h2>
+                            <p style={styles.cardValue}>{stats?.newProceduresLast30Days ?? 'N/A'}</p>
+                        </div>
+                    </div>
+
+                    <section style={styles.quickLinks}>
+                        <h3>Acces Rapid</h3>
+                        <Link to="/clinical-cases" style={styles.link}>&rarr; Vezi Biblioteca Clinică</Link>
+                        <Link to="/profile" style={styles.link}>&rarr; Profilul Meu</Link>
+                    </section>
+
+                    <section style={styles.recentActivity}>
+                        <h3>Activitate Recentă ({selectedSpecialty})</h3>
+                        {recentProcedures.length > 0 ? (
+                            recentProcedures.map(proc => (
+                                <div key={proc.id} style={styles.activityItem}>
+                                    Procedură nouă adăugată: <strong>{proc.name}</strong>
+                                </div>
+                            ))
+                        ) : (
+                            <p>Nicio procedură nouă adăugată recent.</p>
+                        )}
+                    </section>
+                </>
+            )}
         </div>
     );
 };

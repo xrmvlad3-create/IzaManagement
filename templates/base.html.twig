@@ -1,33 +1,51 @@
-{# templates/base.html.twig #}
 <!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}IzaManagement{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IzaManagement - Platformă Medicală{% endblock %}</title>
 
+    {# Descriere pentru motoarele de căutare #}
+    <meta name="description" content="O platformă modernă pentru managementul cazurilor clinice și procedurilor medicale.">
+
+    {# Favicons și iconițe pentru diverse platforme #}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ asset('safari-pinned-tab.svg') }}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    {# --- STILURI --- #}
+    {# Încărcarea stilurilor compilate de Webpack Encore #}
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
+    {# Exemplu de încărcare a fonturilor externe - se încarcă înaintea CSS-ului principal #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,700">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 </head>
 <body>
-{% block body %}
-    {# ACESTA ESTE ELEMENTUL CRUCIAL LIPSĂ #}
-    <div id="root"></div>
-{% endblock %}
+{#
+Containerul principal pentru aplicația React.
+React va prelua controlul acestui div și va randa toate componentele în interiorul lui.
+#}
+<div id="root">
+    {# Puteți adăuga aici un indicator de încărcare simplu, care va fi vizibil doar până când React se încarcă #}
+    <div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+        <p>Se încarcă aplicația...</p>
+    </div>
+</div>
 
+{# --- SCRIPTURI --- #}
+{#
+Este esențial ca scripturile să fie încărcate la finalul <body>-ului
+pentru a permite DOM-ului să se încarce complet înainte de execuția JavaScript-ului.
+#}
 {% block javascripts %}
     {{ encore_entry_script_tags('app') }}
 {% endblock %}

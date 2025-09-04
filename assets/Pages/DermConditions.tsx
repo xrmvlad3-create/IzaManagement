@@ -1,46 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import apiClient from '../functions/axios'; // Importul corect
+import apiClient from '../functions/axios';
+import { useSpecialty } from '../context/SpecialtyContext';
 
 interface DermCondition {
     id: string;
     name: string;
 }
 
-const DermConditions: React.FC = () => {
+const DermConditionsPage: React.FC = () => {
+    const { selectedSpecialty, isLoading: isContextLoading } = useSpecialty();
     const [conditions, setConditions] = useState<DermCondition[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchConditions = async () => {
-            try {
-                const response = await apiClient.get('/api/derm-conditions');
-                setConditions(response.data);
-            } catch (err) {
-                setError('Nu am putut încărca lista de afecțiuni.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchConditions();
-    }, []);
+        if (!isContextLoading && selectedSpecialty) {
+            setIsLoading(true);
+            // Presupunem că API-ul filtrează afecțiunile după specialitate
+            apiClient.get('/api/derm-conditions', { params: { specialty: selectedSpecialty } })
+                .then(response => {
+                    setConditions(response.data);
+                })
+                .catch(error => {
+                    console.error("Failed to fetch derm conditions:", error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
+    }, [selectedSpecialty, isContextLoading]);
 
-    if (loading) return <div>Încărcare...</div>;
-    if (error) return <div style={{ color: 'red' }}>{error}</div>;
+    if (isContextLoading || isLoading) {
+        return <div>Încărcare bibliotecă clinică...</div>;
+    }
 
     return (
         <div>
-            <h1>Afecțiuni Dermatologice</h1>
+            <h1>Bibliotecă Clinică: {selectedSpecialty}</h1>
+            <nav>
+                <Link to="/dashboard">← Înapoi la Dashboard</Link>
+            </nav>
             <ul>
-                {conditions.map(condition => (
-                    <li key={condition.id}>
-                        <Link to={`/derm-conditions/${condition.id}`}>{condition.name}</Link>
-                    </li>
-                ))}
+                {conditions.length > 0 ? (
+                    conditions.map(condition => (
+                        <li key={condition.id}>
+                            <Link to={`/derm-conditions/${condition.id}`}>{condition.name}</Link>
+                        </li>
+                    ))
+                ) : (
+                    <li>Nu există afecțiuni definite pentru această specialitate.</li>
+                )}
             </ul>
         </div>
     );
 };
 
-export default DermConditions;
+export default DermConditionsPage;

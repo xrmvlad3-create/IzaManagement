@@ -2,71 +2,67 @@
 
 namespace App\Entity;
 
+use App\Repository\DoctorProfileRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
-#[ORM\HasLifecycleCallbacks]
+#[ORM\Entity(repositoryClass: DoctorProfileRepository::class)]
 class DoctorProfile
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    private UuidInterface $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    #[ORM\OneToOne(targetEntity: User::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private User $user;
+    #[ORM\OneToOne(inversedBy: 'doctorProfile', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $hospital = null;
+    // --- AICI SUNT MODIFICĂRILE NECESARE ---
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(min: 3, max: 255)]
-    private ?string $licenseNumber = null;
+    /**
+     * @var string[]
+     */
+    #[ORM\Column(type: 'json')]
+    private array $specialties = [];
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $specialty = null;
+    // --- SFÂRȘITUL MODIFICĂRILOR ---
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $preferences = null;
-
-    #[ORM\Column(type: 'datetime_immutable')]
-    private \DateTimeImmutable $createdAt;
-
-    #[ORM\Column(type: 'datetime_immutable')]
-    private \DateTimeImmutable $updatedAt;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    #[ORM\PreUpdate]
-    public function onPreUpdate(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    public function getId(): UuidInterface
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(User $user): self
+    public function setUser(User $user): static
     {
         $this->user = $user;
+
         return $this;
     }
 
-    // ... other getters and setters ...
+    // --- AICI SUNT NOILE METODE ---
+
+    /**
+     * @return string[]
+     */
+    public function getSpecialties(): array
+    {
+        return $this->specialties;
+    }
+
+    /**
+     * @param string[] $specialties
+     */
+    public function setSpecialties(array $specialties): static
+    {
+        $this->specialties = $specialties;
+
+        return $this;
+    }
+
+    // --- SFÂRȘITUL NOILOR METODE ---
 }

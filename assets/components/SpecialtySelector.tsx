@@ -1,40 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSpecialty } from '../context/SpecialtyContext';
-import { getUserProfile } from '../services/api';
 
-// Definim componenta ca o constantă
 const SpecialtySelector: React.FC = () => {
-    const { selectSpecialty, userSpecialties, setUserSpecialties, selectedSpecialty } = useSpecialty();
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { selectedSpecialty, selectSpecialty, userSpecialties, isLoading } = useSpecialty();
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            setLoading(true);
-            try {
-                const profile = await getUserProfile();
-                if (profile.specialties && profile.specialties.length > 0) {
-                    setUserSpecialties(profile.specialties);
-                    // Selectăm prima specialitate doar dacă nu este deja una selectată
-                    if (!selectedSpecialty) {
-                        selectSpecialty(profile.specialties[0]);
-                    }
-                } else {
-                    setError('Nu aveți specialități asignate. Contactați un administrator.');
-                }
-            } catch (err) {
-                setError('Nu am putut încărca profilul utilizatorului.');
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Nu afișăm nimic relevant cât timp datele esențiale se încarcă
+    if (isLoading) {
+        return <div>Încărcare specialități...</div>;
+    }
 
-        fetchProfile();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Rulăm o singură dată la montarea componentei
-
-    if (loading) return <div>Încărcare specialități...</div>;
-    if (error) return <div className="error-message">{error}</div>;
+    // Caz în care utilizatorul nu are specialități asignate
+    if (userSpecialties.length === 0) {
+        return <div>Nu aveți specialități asignate.</div>;
+    }
 
     return (
         <div className="specialty-selector">
@@ -54,5 +32,4 @@ const SpecialtySelector: React.FC = () => {
     );
 };
 
-// Exportăm explicit ca default
 export default SpecialtySelector;
