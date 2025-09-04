@@ -1,52 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { request } from '../functions/axios';
+import { useParams } from 'react-router-dom';
+import apiClient from '../functions/axios'; // Importul corect
 
-interface DermConditionDetailData {
+interface DermCondition {
     id: string;
-    title: string;
-    summary: string | null;
+    name: string;
+    description: string;
 }
 
 const DermConditionDetail: React.FC = () => {
-    // Soluția finală: Aserțiune de tip pentru a forța rezolvarea erorii TS2554
-    const { slug } = useParams() as { slug: string };
-
-    const [condition, setCondition] = useState<DermConditionDetailData | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const { id } = useParams<{ id: string }>();
+    const [condition, setCondition] = useState<DermCondition | null>(null);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!slug) {
-            setError("Slug not found.");
-            setLoading(false);
-            return;
-        }
-        const fetchConditionDetail = async () => {
+        if (!id) return;
+        const fetchCondition = async () => {
             try {
-                setLoading(true);
-                const response = await request('get', `/api/derm/conditions/${slug}`);
+                const response = await apiClient.get(`/api/derm-conditions/${id}`);
                 setCondition(response.data);
             } catch (err) {
-                setError('Failed to fetch condition details.');
+                setError('Nu am putut încărca detaliile afecțiunii.');
             } finally {
                 setLoading(false);
             }
         };
-        fetchConditionDetail();
-    }, [slug]);
+        fetchCondition();
+    }, [id]);
 
-    if (loading) return <div>Loading details...</div>;
-    if (error) return <div>{error}</div>;
-    if (!condition) return <div>Condition not found.</div>;
+    if (loading) return <div>Încărcare...</div>;
+    if (error) return <div style={{ color: 'red' }}>{error}</div>;
+    if (!condition) return <div>Afecțiunea nu a fost găsită.</div>;
 
     return (
-        <div className="condition-detail-page">
-            <h1>{condition.title}</h1>
-            <p>{condition.summary || 'No summary available.'}</p>
-            <Link to={`/ai-chat?case_id=${condition.id}`}>
-                <button>Upload case image</button>
-            </Link>
+        <div>
+            <h1>{condition.name}</h1>
+            <p>{condition.description}</p>
         </div>
     );
 };

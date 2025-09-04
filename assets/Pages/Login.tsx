@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { request } from '../functions/axios'; // Presupunând că acest wrapper există
+import apiClient from '../functions/axios'; // Importul corect
 
-// --- Stiluri (simulate ca CSS-in-JS pentru claritate) ---
-// Într-un proiect real, acestea ar fi în fișiere .css sau .scss
 const styles: { [key: string]: React.CSSProperties } = {
     pageContainer: {
         display: 'flex',
@@ -82,11 +80,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-const LoginPage: React.FC = () => {
+const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false); // Stare nouă pentru feedback
+    const [loading, setLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const navigate = useNavigate();
 
@@ -97,23 +95,23 @@ const LoginPage: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
-        setLoading(true); // Începe procesul de autentificare
+        setLoading(true);
         try {
-            const response = await request('post', '/api/login_check', {
+            const response = await apiClient.post('/api/login_check', {
                 username: email,
                 password: password,
             });
 
             if (response.data.token) {
                 localStorage.setItem('authToken', response.data.token);
-                navigate('/dashboard'); // Sau pe dashboard
+                navigate('/dashboard');
             } else {
                 setError('Răspuns invalid de la server.');
             }
         } catch (err) {
             setError('Date de autentificare invalide. Vă rugăm să reîncercați.');
         } finally {
-            setLoading(false); // Termină procesul, indiferent de rezultat
+            setLoading(false);
         }
     };
 
@@ -162,4 +160,4 @@ const LoginPage: React.FC = () => {
     );
 };
 
-export default LoginPage;
+export default Login;
