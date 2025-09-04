@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\DermCondition;
-use App\Entity\Enum\DermConditionStatus;
+use App\Entity\ClinicalCase;
+use App\Entity\Enum\CaseStatus;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -11,60 +11,71 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    public function __construct(
-        private readonly UserPasswordHasherInterface $passwordHasher
-    ) {
+    public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
+    {
     }
 
     public function load(ObjectManager $manager): void
     {
-        // === Creează Utilizatori ===
-        $this->createUsers($manager);
+        // === Create Users ===
+        $adminUser = new User();
+        $adminUser->setEmail('admin@example.test');
+        $adminUser->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+        $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'password123'));
+        $manager->persist($adminUser);
+        $this->addReference('admin-user', $adminUser);
 
-        // === Creează Afecțiuni Dermatologice ===
-        $this->createDermConditions($manager);
+        $doctorUser = new User();
+        $doctorUser->setEmail('doctor@example.test');
+        $doctorUser->setRoles(['ROLE_USER']);
+        $doctorUser->setPassword($this->passwordHasher->hashPassword($doctorUser, 'password123'));
+        $manager->persist($doctorUser);
+        $this->addReference('doctor-user', $doctorUser);
+
+        // === Create Clinical Cases ===
+        $casesData = [
+            [
+                'name' => 'Hipertensiune arterială esențială',
+                'description' => 'Caz standard de hipertensiune la un pacient de 55 de ani.',
+                'symptoms' => 'Cefalee, amețeli ocazionale.',
+                'treatmentProtocol' => 'IECA + diuretic tiazidic.',
+                'procedureCodes' => ['I10'],
+                'status' => CaseStatus::PUBLISHED,
+                'createdBy' => 'admin-user',
+            ],
+            [
+                'name' => 'Diabet zaharat tip 2',
+                'description' => 'Pacient nou diagnosticat cu diabet tip 2, fără complicații.',
+                'symptoms' => 'Poliurie, polidipsie.',
+                'treatmentProtocol' => 'Metformin 500mg de două ori pe zi.',
+                'procedureCodes' => ['E11.9'],
+                'status' => CaseStatus::PUBLISHED,
+                'createdBy' => 'admin-user',
+            ],
+            [
+                'name' => 'Caz dermatologic în pregătire',
+                'description' => 'Caz dermatologic complex, necesită investigații suplimentare.',
+                'symptoms' => 'Leziuni cutanate polimorfe.',
+                'treatmentProtocol' => null,
+                'procedureCodes' => [],
+                'status' => CaseStatus::DRAFT,
+                'createdBy' => 'doctor-user',
+            ],
+        ];
+
+        foreach ($casesData as $data) {
+            $case = new ClinicalCase();
+            $case->setName($data['name']);
+            $case->setDescription($data['description']);
+            $case->setSymptoms($data['symptoms']);
+            $case->setTreatmentProtocol($data['treatmentProtocol']);
+            $case->setProcedureCodes($data['procedureCodes']);
+            $case->setStatus($data['status']);
+            $case->setCreatedBy($this->getReference($data['createdBy']));
+            $case->addAuditLogEntry('Caz creat prin fixtures.', 'system@fixtures');
+            $manager->persist($case);
+        }
 
         $manager->flush();
-    }
-
-    private function createUsers(ObjectManager $manager): void
-    {
-        $usersData = [
-            ['email' => 'admin@example.test', 'roles' => ['ROLE_ADMIN'], 'name' => 'Admin User'],
-            ['email' => 'doctor@example.test', 'roles' => ['ROLE_USER'], 'name' => 'Doctor User'],
-            ['email' => 'prof@example.test', 'roles' => ['ROLE_USER'], 'name' => 'Professor User'],
-        ];
-
-        foreach ($usersData as $data) {
-            $user = new User();
-            $user->setEmail($data['email']);
-            $user->setRoles($data['roles']);
-            $user->setName($data['name']);
-            // Toți utilizatorii vor avea parola 'password123'
-            $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
-            $user->setPassword($hashedPassword);
-            $manager->persist($user);
-        }
-    }
-
-    private function createDermConditions(ObjectManager $manager): void
-    {
-        $conditionsData = [
-            ['slug' => 'acne-vulgaris', 'title' => 'Acne Vulgaris', 'summary' => 'A common chronic skin disease involving inflammation of the sebaceous glands.'],
-            ['slug' => 'eczema', 'title' => 'Eczema (Atopic Dermatitis)', 'summary' => 'A condition that makes your skin red and itchy. It\'s common in children but can occur at any age.'],
-            ['slug' => 'psoriasis', 'title' => 'Psoriasis', 'summary' => 'A skin disease that causes red, itchy scaly patches, most commonly on the knees, elbows, trunk and scalp.'],
-            ['slug' => 'tinea', 'title' => 'Tinea (Ringworm)', 'summary' => 'A common fungal infection of the skin. The name is a misnomer, as it is caused by a fungus, not a worm.'],
-            ['slug' => 'urticaria', 'title' => 'Urticaria (Hives)', 'summary' => 'A skin rash triggered by a reaction to food, medicine, or other irritants. Also known as hives.'],
-        ];
-
-        foreach ($conditionsData as $data) {
-            $condition = new DermCondition();
-            $condition->setSlug($data['slug']);
-            $condition->setTitle($data['title']);
-            $condition->setSummary($data['summary']);
-            $condition->setStatus(DermConditionStatus::PUBLISHED);
-            // Opțional, poți seta și alte câmpuri (epidemiology, clinical, etc.) cu text mai detaliat
-            $manager->persist($condition);
-        }
     }
 }
