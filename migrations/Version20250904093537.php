@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250903102738 extends AbstractMigration
+final class Version20250904093537 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -32,16 +32,12 @@ final class Version20250903102738 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN audit_log.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN audit_log.user_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN audit_log.created_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE clinical_case (id UUID NOT NULL, author_id UUID NOT NULL, title VARCHAR(255) NOT NULL, notes TEXT DEFAULT NULL, patient_meta JSON NOT NULL, tags JSON NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX IDX_6AFE4B30F675F31B ON clinical_case (author_id)');
+        $this->addSql('CREATE TABLE clinical_case (id UUID NOT NULL, created_by_id UUID NOT NULL, name VARCHAR(255) NOT NULL, specialty VARCHAR(100) NOT NULL, description TEXT DEFAULT NULL, symptoms TEXT DEFAULT NULL, treatment_protocol TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_6AFE4B30B03A8386 ON clinical_case (created_by_id)');
         $this->addSql('COMMENT ON COLUMN clinical_case.id IS \'(DC2Type:uuid)\'');
-        $this->addSql('COMMENT ON COLUMN clinical_case.author_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN clinical_case.created_by_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN clinical_case.created_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE clinical_case_media_asset (clinical_case_id UUID NOT NULL, media_asset_id UUID NOT NULL, PRIMARY KEY(clinical_case_id, media_asset_id))');
-        $this->addSql('CREATE INDEX IDX_658333ACBA2691F ON clinical_case_media_asset (clinical_case_id)');
-        $this->addSql('CREATE INDEX IDX_658333ACABB37F3 ON clinical_case_media_asset (media_asset_id)');
-        $this->addSql('COMMENT ON COLUMN clinical_case_media_asset.clinical_case_id IS \'(DC2Type:uuid)\'');
-        $this->addSql('COMMENT ON COLUMN clinical_case_media_asset.media_asset_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN clinical_case.updated_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE course (id UUID NOT NULL, created_by_id UUID NOT NULL, title VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, sections JSON DEFAULT NULL, status VARCHAR(255) NOT NULL, price NUMERIC(10, 2) DEFAULT NULL, ce_credits INT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_169E6FB9B03A8386 ON course (created_by_id)');
         $this->addSql('COMMENT ON COLUMN course.id IS \'(DC2Type:uuid)\'');
@@ -73,12 +69,20 @@ final class Version20250903102738 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN media_asset.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN media_asset.owner_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN media_asset.created_at IS \'(DC2Type:datetime_immutable)\'');
+        $this->addSql('CREATE TABLE procedure (id UUID NOT NULL, clinical_case_id UUID DEFAULT NULL, created_by_id UUID NOT NULL, name VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, tutorial_steps JSON NOT NULL, video_links JSON NOT NULL, specialty VARCHAR(100) NOT NULL, warnings TEXT DEFAULT NULL, audit_log TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_9C3CBC1FBA2691F ON procedure (clinical_case_id)');
+        $this->addSql('CREATE INDEX IDX_9C3CBC1FB03A8386 ON procedure (created_by_id)');
+        $this->addSql('COMMENT ON COLUMN procedure.id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN procedure.clinical_case_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN procedure.created_by_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN procedure.created_at IS \'(DC2Type:datetime_immutable)\'');
+        $this->addSql('COMMENT ON COLUMN procedure.updated_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('CREATE TABLE protocol (id UUID NOT NULL, condition_id UUID NOT NULL, name VARCHAR(255) NOT NULL, intent VARCHAR(255) NOT NULL, audience VARCHAR(255) DEFAULT NULL, steps JSON NOT NULL, meds JSON DEFAULT NULL, contraindications TEXT DEFAULT NULL, evidence_level VARCHAR(100) DEFAULT NULL, attachments JSON DEFAULT NULL, status VARCHAR(255) NOT NULL, version INT DEFAULT 1 NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_C8C0BC4C887793B6 ON protocol (condition_id)');
         $this->addSql('COMMENT ON COLUMN protocol.id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN protocol.condition_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN protocol.updated_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('CREATE TABLE "user" (id UUID NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, roles JSON NOT NULL, name VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "user" (id UUID NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, roles JSON NOT NULL, name VARCHAR(255) DEFAULT NULL, specialties JSON NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)');
         $this->addSql('COMMENT ON COLUMN "user".id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN "user".created_at IS \'(DC2Type:datetime_immutable)\'');
@@ -101,15 +105,15 @@ final class Version20250903102738 extends AbstractMigration
         $this->addSql('ALTER TABLE aiconsultation ADD CONSTRAINT FK_A49C84E7BA2691F FOREIGN KEY (clinical_case_id) REFERENCES clinical_case (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE aiconsultation ADD CONSTRAINT FK_A49C84E7A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE audit_log ADD CONSTRAINT FK_F6E1C0F5A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE clinical_case ADD CONSTRAINT FK_6AFE4B30F675F31B FOREIGN KEY (author_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE clinical_case_media_asset ADD CONSTRAINT FK_658333ACBA2691F FOREIGN KEY (clinical_case_id) REFERENCES clinical_case (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE clinical_case_media_asset ADD CONSTRAINT FK_658333ACABB37F3 FOREIGN KEY (media_asset_id) REFERENCES media_asset (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE clinical_case ADD CONSTRAINT FK_6AFE4B30B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE course ADD CONSTRAINT FK_169E6FB9B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE doctor_profile ADD CONSTRAINT FK_12FAC9A2A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE enrollment ADD CONSTRAINT FK_DBDCD7E1591CC992 FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE enrollment ADD CONSTRAINT FK_DBDCD7E1A76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE lesson ADD CONSTRAINT FK_F87474F3591CC992 FOREIGN KEY (course_id) REFERENCES course (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE media_asset ADD CONSTRAINT FK_1DB69EED7E3C61F9 FOREIGN KEY (owner_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE procedure ADD CONSTRAINT FK_9C3CBC1FBA2691F FOREIGN KEY (clinical_case_id) REFERENCES clinical_case (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE procedure ADD CONSTRAINT FK_9C3CBC1FB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE protocol ADD CONSTRAINT FK_C8C0BC4C887793B6 FOREIGN KEY (condition_id) REFERENCES derm_conditions (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
@@ -120,26 +124,26 @@ final class Version20250903102738 extends AbstractMigration
         $this->addSql('ALTER TABLE aiconsultation DROP CONSTRAINT FK_A49C84E7BA2691F');
         $this->addSql('ALTER TABLE aiconsultation DROP CONSTRAINT FK_A49C84E7A76ED395');
         $this->addSql('ALTER TABLE audit_log DROP CONSTRAINT FK_F6E1C0F5A76ED395');
-        $this->addSql('ALTER TABLE clinical_case DROP CONSTRAINT FK_6AFE4B30F675F31B');
-        $this->addSql('ALTER TABLE clinical_case_media_asset DROP CONSTRAINT FK_658333ACBA2691F');
-        $this->addSql('ALTER TABLE clinical_case_media_asset DROP CONSTRAINT FK_658333ACABB37F3');
+        $this->addSql('ALTER TABLE clinical_case DROP CONSTRAINT FK_6AFE4B30B03A8386');
         $this->addSql('ALTER TABLE course DROP CONSTRAINT FK_169E6FB9B03A8386');
         $this->addSql('ALTER TABLE doctor_profile DROP CONSTRAINT FK_12FAC9A2A76ED395');
         $this->addSql('ALTER TABLE enrollment DROP CONSTRAINT FK_DBDCD7E1591CC992');
         $this->addSql('ALTER TABLE enrollment DROP CONSTRAINT FK_DBDCD7E1A76ED395');
         $this->addSql('ALTER TABLE lesson DROP CONSTRAINT FK_F87474F3591CC992');
         $this->addSql('ALTER TABLE media_asset DROP CONSTRAINT FK_1DB69EED7E3C61F9');
+        $this->addSql('ALTER TABLE procedure DROP CONSTRAINT FK_9C3CBC1FBA2691F');
+        $this->addSql('ALTER TABLE procedure DROP CONSTRAINT FK_9C3CBC1FB03A8386');
         $this->addSql('ALTER TABLE protocol DROP CONSTRAINT FK_C8C0BC4C887793B6');
         $this->addSql('DROP TABLE aiconsultation');
         $this->addSql('DROP TABLE audit_log');
         $this->addSql('DROP TABLE clinical_case');
-        $this->addSql('DROP TABLE clinical_case_media_asset');
         $this->addSql('DROP TABLE course');
         $this->addSql('DROP TABLE derm_conditions');
         $this->addSql('DROP TABLE doctor_profile');
         $this->addSql('DROP TABLE enrollment');
         $this->addSql('DROP TABLE lesson');
         $this->addSql('DROP TABLE media_asset');
+        $this->addSql('DROP TABLE procedure');
         $this->addSql('DROP TABLE protocol');
         $this->addSql('DROP TABLE "user"');
         $this->addSql('DROP TABLE messenger_messages');
