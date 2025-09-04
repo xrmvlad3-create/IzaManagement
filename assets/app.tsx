@@ -1,31 +1,39 @@
-// assets/app.tsx
 import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { SpecialtyProvider } from './context/SpecialtyContext';
 
+// Importăm paginile respectând structura de directoare
 import HomePage from './Pages/Home';
 import LoginPage from './Pages/Login';
-import DermConditions from './Pages/DermConditions';
-import ProtectedRoute from './components/ProtectedRoute';
+import Dashboard from './Pages/Dashboard';
+import ClinicalCasesPage from './Pages/ClinicalCasesPage';
 
-const App = () => {
-    const token = localStorage.getItem('authToken');
+// --- MODIFICARE AICI ---
+// Importăm componenta de protecție cu numele ei real (PascalCase),
+// chiar dacă numele fișierului este cu literă mică.
+import PrivateRoute from './components/privateRoute';
 
+const App: React.FC = () => {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={token ? <Navigate replace to="/home" /> : <Navigate replace to="/login" />} />
-                <Route path="/login" element={token ? <Navigate replace to="/home" /> : <LoginPage />} />
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/home" element={<HomePage />} />
-                    <Route path="/derm/conditions" element={<DermConditions />} />
-                </Route>
-                <Route path="*" element={<p>404: Pagina nu a fost găsită</p>} />
-            </Routes>
-        </BrowserRouter>
+        <SpecialtyProvider>
+            <Router>
+                <Routes>
+                    {/* --- Rute Publice --- */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+
+                    {/* --- Rute Protejate --- */}
+                    {/* Aici folosim componenta PrivateRoute (cu P mare), care a fost importată corect */}
+                    <Route element={<PrivateRoute />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/clinical-cases" element={<ClinicalCasesPage />} />
+                    </Route>
+
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </Router>
+        </SpecialtyProvider>
     );
 };
 
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<App />);
+export default App;
