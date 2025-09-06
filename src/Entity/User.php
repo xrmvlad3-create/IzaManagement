@@ -36,9 +36,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'json')]
-    private array $specialties = [];
-
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
@@ -49,7 +46,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
-        $this->specialties = [];
     }
 
     #[ORM\PreUpdate]
@@ -71,6 +67,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(?string $name): static { $this->name = $name; return $this; }
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
-    public function getSpecialties(): array { if (in_array('ROLE_ADMIN', $this->getRoles(), true)) { return ['dermatologie', 'ortopedie', 'cardiologie', 'estetica']; } return $this->specialties; }
-    public function setSpecialties(array $specialties): static { $this->specialties = $specialties; return $this; }
 }

@@ -20,7 +20,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/derm/conditions')]
 class DermConditionController extends AbstractController
 {
-    // --- ASIGURĂ-TE CĂ ACEST CONSTRUCTOR NU MAI ESTE COMENTAT ---
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly DermConditionRepository $dermConditionRepository,
@@ -30,9 +29,6 @@ class DermConditionController extends AbstractController
     ) {
     }
 
-    /**
-     * Get a paginated list of dermatological conditions.
-     */
     #[Route('', name: 'api_derm_conditions_list', methods: ['GET'])]
     public function list(Request $request): JsonResponse
     {

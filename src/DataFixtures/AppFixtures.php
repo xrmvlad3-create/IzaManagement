@@ -19,34 +19,45 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // --- Utilizatorul personalizat: Iza ---
+        // Create user Iza
         $izaUser = new User();
-
-        // Utilizatorul (poate fi și un email valid, ex: 'iza@management.com')
         $izaUser->setEmail('Iza@vlad.ro');
-
-        // Rolurile necesare pentru a fi considerat doctor
         $izaUser->setRoles(['ROLE_DOCTOR', 'ROLE_USER']);
-
-        // Parola 'IV' va fi hash-uită automat
-        $hashedPassword = $this->passwordHasher->hashPassword(
-            $izaUser,
-            'IV'
-        );
+        $hashedPassword = $this->passwordHasher->hashPassword($izaUser, 'IV');
         $izaUser->setPassword($hashedPassword);
-
         $manager->persist($izaUser);
 
-        // --- Crearea profilului de doctor pentru Iza ---
         $doctorProfile = new DoctorProfile();
-        $doctorProfile->setUser($izaUser); // Asocierea cu utilizatorul Iza
-
-        // Adăugăm specialități pentru a asigura funcționarea dashboard-ului
+        $doctorProfile->setUser($izaUser);
         $doctorProfile->setSpecialties(['dermatologie', 'chirurgie plastică']);
-
         $manager->persist($doctorProfile);
 
-        // Se salvează totul în baza de date
+        // Create admin user
+        $adminUser = new User();
+        $adminUser->setEmail('admin@example.test');
+        $adminUser->setRoles(['ROLE_ADMIN']);
+        $hashedPassword = $this->passwordHasher->hashPassword($adminUser, 'password');
+        $adminUser->setPassword($hashedPassword);
+        $manager->persist($adminUser);
+
+        $adminProfile = new DoctorProfile();
+        $adminProfile->setUser($adminUser);
+        $adminProfile->setSpecialties(['dermatologie', 'ortopedie']);
+        $manager->persist($adminProfile);
+
+        // Create doctor user
+        $doctorUser = new User();
+        $doctorUser->setEmail('doctor@example.test');
+        $doctorUser->setRoles(['ROLE_DOCTOR']);
+        $hashedPassword = $this->passwordHasher->hashPassword($doctorUser, 'password');
+        $doctorUser->setPassword($hashedPassword);
+        $manager->persist($doctorUser);
+
+        $doctorProfile2 = new DoctorProfile();
+        $doctorProfile2->setUser($doctorUser);
+        $doctorProfile2->setSpecialties(['dermatologie']);
+        $manager->persist($doctorProfile2);
+
         $manager->flush();
     }
 }
