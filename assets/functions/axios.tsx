@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL: process.env.REACT_APP_BACKEND_URL || 'https://localhost:8000',
+    baseURL: 'http://localhost:8000', // Remove https for development
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // Important for CORS
 });
 
 apiClient.interceptors.request.use(
@@ -16,6 +17,18 @@ apiClient.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            // Token expired or invalid
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+        }
         return Promise.reject(error);
     }
 );
