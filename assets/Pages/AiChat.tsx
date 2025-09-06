@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import apiClient from '../functions/axios'; // Importul corect
+import {request} from '../functions/axios'; // Importul corect
 
 const AiChat: React.FC = () => {
     const [prompt, setPrompt] = useState('');
@@ -11,7 +11,7 @@ const AiChat: React.FC = () => {
         setLoading(true);
         setResponse(''); // Resetează răspunsul anterior
         try {
-            const res = await apiClient.post('/api/ai/chat', { prompt });
+            const res = await request('post','/api/ai/chat', false, { prompt });
             setResponse(res.data.response);
         } catch (error) {
             setResponse('A apărut o eroare la comunicarea cu serviciul AI.');

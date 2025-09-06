@@ -17,10 +17,6 @@ const Home = () => {
     return (
         <div>
             <h1>Bun venit!</h1>
-            <p>Te-ai autentificat cu succes în aplicația IzaManagement.</p>
-            <button onClick={handleLogout}>
-                Logout
-            </button>
         </div>
     );
 };

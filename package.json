@@ -12,15 +12,22 @@
     "dependencies": {
         "@hotwired/stimulus": "^3.2.1",
         "@hotwired/turbo": "^7.3.0",
-        "@symfony/webpack-encore": "^4.0.0",
+        "@mui/icons-material": "^7.3.2",
+        "@mui/material": "^7.3.2",
+        "@mui/styles": "^6.4.8",
+        "@symfony/webpack-encore": "^5.0.0",
+        "@types/react-window": "^1.8.8",
         "axios": "^1.6.0",
         "core-js": "^3.32.0",
+        "dayjs": "^1.11.18",
         "dotenv": "^17.2.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.15.0",
+        "react-window": "1.8.10",
         "webpack": "^5.101.3",
-        "webpack-cli": "^6.0.1"
+        "webpack-cli": "^6.0.1",
+        "xlsx": "^0"
     },
     "devDependencies": {
         "@babel/core": "^7.22.0",
@@ -36,6 +43,7 @@
         "jest-environment-jsdom": "^29.6.0",
         "ts-loader": "^9.0.0",
         "typescript": "^5.1.0",
+        "webpack-dev-server": "^5.2.2",
         "webpack-notifier": "^1.15.0"
     }
 }

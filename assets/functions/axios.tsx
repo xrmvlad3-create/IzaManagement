@@ -1,36 +1,32 @@
-import axios from 'axios';
+import axios from "axios";
 
-const apiClient = axios.create({
-    baseURL: process.env.REACT_APP_BACKEND_API_URL, // Remove https for development
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    withCredentials: true, // Important for CORS
-});
+function refreshLogin(): void {
+    localStorage.clear();
+    window.document.location = '/login?to=' + window.document.location.pathname;
+}
 
-apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+export async function request(method: string, url: string, with_token: boolean, requestData: object | null = {}, setRequestData: boolean | any = false, contentType = 'application/json') {
+    const response = await axios({
+        method: method, url: `${process.env.REACT_APP_BACKEND_API_URL}/api/${url}`, timeout: 90000, headers: {
+            Accept: contentType,
+            ContentType: contentType,
+            Authorization: with_token ? ('Bearer ' + localStorage.getItem('token')) : '',
+            withCredentials: true,
+            withXSRFToken: true,
+            "Access-Control-Allow-Origin": "*"
+        }, params: method === 'get' ? requestData : {}, data: requestData
+    }).then(response => {
+        if (setRequestData !== false) setRequestData(response.data); else return response.data;
+    }).catch(error => {
+        console.log(with_token, error);
+        if (with_token && error.response && error.response.status === 401) {
+            refreshLogin();
+        } else {
+            if (setRequestData !== false && typeof error === 'object') setRequestData(error.response); else return error.response;
         }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+    });
 
-apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Token expired or invalid
-            localStorage.removeItem('authToken');
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
+    if (setRequestData === false) {
+        return response;
     }
-);
-
-export default apiClient;
+}

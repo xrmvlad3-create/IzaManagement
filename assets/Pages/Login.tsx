@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../functions/axios'; // Importul corect
+import {request} from '../functions/axios'; // Importul corect
 
 const styles: { [key: string]: React.CSSProperties } = {
     pageContainer: {
@@ -97,13 +97,13 @@ const Login: React.FC = () => {
         setError(null);
         setLoading(true);
         try {
-            const response = await apiClient.post('/api/login_check', {
+            const response = await request('post','/api/login_check', false, {
                 username: email,
                 password: password,
             });
 
-            if (response.data.token) {
-                localStorage.setItem('authToken', response.data.token);
+            if (response.token) {
+                localStorage.setItem('authToken', response.token);
                 navigate('/dashboard');
             } else {
                 setError('Răspuns invalid de la server.');

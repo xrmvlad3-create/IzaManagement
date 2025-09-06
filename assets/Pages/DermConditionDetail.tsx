@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import apiClient from '../functions/axios';
+import {request} from '../functions/axios';
 
 interface DermConditionDetail {
     id: string;
@@ -17,7 +17,7 @@ const DermConditionDetailPage: React.FC = () => {
     useEffect(() => {
         if (id) {
             setIsLoading(true);
-            apiClient.get(`/api/derm-conditions/${id}`)
+            request('get', `/api/derm-conditions/${id}`, true, null)
                 .then(response => {
                     setCondition(response.data);
                 })

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import apiClient from '../functions/axios';
+import {request} from '../functions/axios';
 import { useSpecialty } from '../context/SpecialtyContext';
 
 interface DermCondition {
@@ -17,7 +17,7 @@ const DermConditionsPage: React.FC = () => {
         if (!isContextLoading && selectedSpecialty) {
             setIsLoading(true);
             // Presupunem că API-ul filtrează afecțiunile după specialitate
-            apiClient.get('/api/derm-conditions', { params: { specialty: selectedSpecialty } })
+            request('get', '/api/derm-conditions', false, { params: { specialty: selectedSpecialty } })
                 .then(response => {
                     setConditions(response.data);
                 })
