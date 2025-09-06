@@ -44,26 +44,26 @@ export interface RecentProcedure {
 // --- Funcții API - TOATE folosesc acum apiClient ---
 
 export const getUserProfile = async (): Promise<UserProfile> => {
-    const response = await apiClient.get<UserProfile>('/api/profile');
+    const response = await apiClient.get<UserProfile>('profile');
     return response.data;
 };
 
 export const getClinicalCases = async (specialty: string): Promise<ClinicalCase[]> => {
-    const response = await apiClient.get<ClinicalCase[]>('/api/cases', { params: { specialty } });
+    const response = await apiClient.get<ClinicalCase[]>('cases', { params: { specialty } });
     return response.data;
 };
 
 export const getProcedures = async (specialty: string): Promise<Procedure[]> => {
-    const response = await apiClient.get<Procedure[]>('/api/procedures', { params: { specialty } });
+    const response = await apiClient.get<Procedure[]>('procedures', { params: { specialty } });
     return response.data;
 };
 
 export const getDashboardStats = async (specialty: string): Promise<DashboardStats> => {
-    const response = await apiClient.get<DashboardStats>('/api/dashboard/stats', { params: { specialty } });
+    const response = await apiClient.get<DashboardStats>('dashboard/stats', { params: { specialty } });
     return response.data;
 };
 
 export const getRecentProcedures = async (specialty: string): Promise<RecentProcedure[]> => {
-    const response = await apiClient.get<RecentProcedure[]>('/api/procedures/recent', { params: { specialty } });
+    const response = await apiClient.get<RecentProcedure[]>('procedures/recent', { params: { specialty } });
     return response.data;
 };

@@ -1,12 +1,5 @@
 const Encore = require('@symfony/webpack-encore');
 const webpack = require('webpack');
-const dotenv = require('dotenv');
-
-// Load environment variables from .env.local
-const env = dotenv.config({ path: '.env.local' });
-if (env.error) {
-    console.warn('Warning: .env.local file not found or invalid');
-}
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -28,22 +21,11 @@ Encore
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
 
-    // Add environment variables to React build
-    .configureDefinePlugin(options => {
-        // Get all REACT_APP_ prefixed environment variables
-        const reactAppEnvVars = {};
-
-        if (env.parsed) {
-            Object.keys(env.parsed).forEach(key => {
-                if (key.startsWith('REACT_APP_')) {
-                    reactAppEnvVars[`process.env.${key}`] = JSON.stringify(env.parsed[key]);
-                }
-            });
-        }
-
-        // Merge with existing options
-        Object.assign(options, reactAppEnvVars);
-    })
+    .addPlugin(new webpack.DefinePlugin({
+        'process.env.REACT_APP_SECURE_LOCAL_STORAGE_HASH_KEY': 'w7VPCVigoNFwyjlsSKkkjOW8XFh78T4O',
+        'process.env.REACT_APP_BACKEND_URL': JSON.stringify('https://localhost:8000'),
+        'process.env.REACT_APP_BACKEND_API_URL': JSON.stringify('https://localhost:8000/api/'),
+    }))
 
     .configureDevServerOptions(options => {
         options.server = {
