@@ -36,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: DoctorProfile::class, cascade: ['persist', 'remove'])]
+    private ?DoctorProfile $doctorProfile = null;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
@@ -65,6 +68,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials(): void { }
     public function getName(): ?string { return $this->name; }
     public function setName(?string $name): static { $this->name = $name; return $this; }
+    public function getDoctorProfile(): ?DoctorProfile { return $this->doctorProfile; }
+    public function setDoctorProfile(?DoctorProfile $doctorProfile): static { $this->doctorProfile = $doctorProfile; return $this; }
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
 }
