@@ -1,23 +1,22 @@
-// assets/pages/Home.tsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Box} from "@mui/material";
 
 const Home = () => {
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        // Într-un sistem JWT stateless, logout-ul pe client este suficient.
-        // Pur și simplu ștergem token-ul din stocarea locală.
-        localStorage.removeItem('authToken');
-
-        // Redirecționăm utilizatorul la pagina de login.
-        navigate('/login');
-    };
 
     return (
-        <div>
-            <h1>Bun venit!</h1>
-        </div>
+        <Box className={"home-root"}>
+            <Box className={"home-header"}>
+                Isabela Fartusnic
+            </Box>
+
+            <Box className={"home-content"}>
+                <h1>Bun venit!</h1>
+            </Box>
+
+            <Box className={"home-footer"}>
+                Copyright @ 2025
+            </Box>
+        </Box>
     );
 };
 

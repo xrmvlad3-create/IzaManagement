@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import Root from './components/Root'; // Vom crea această componentă nouă
+import "./styles/app.css";
 
 // Căutăm elementul #root din base.html.twig
 const container = document.getElementById('root');

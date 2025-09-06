@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { useSpecialty } from '../context/SpecialtyContext';
 import { getDashboardStats, getRecentProcedures } from '../services/api';
 import SpecialtySelector from '../components/SpecialtySelector';
@@ -36,6 +36,7 @@ const Dashboard: React.FC = () => {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentProcedures, setRecentProcedures] = useState<RecentProcedure[]>([]);
     const [isDataLoading, setIsDataLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Încărcăm datele specifice dashboard-ului doar după ce contextul este gata și avem o specialitate
@@ -75,6 +76,15 @@ const Dashboard: React.FC = () => {
             </div>
         );
     }
+
+    const handleLogout = () => {
+        // Într-un sistem JWT stateless, logout-ul pe client este suficient.
+        // Pur și simplu ștergem token-ul din stocarea locală.
+        localStorage.removeItem('authToken');
+
+        // Redirecționăm utilizatorul la pagina de login.
+        navigate('/login');
+    };
 
     // Acum afișăm conținutul real
     return (
