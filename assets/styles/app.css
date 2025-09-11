@@ -1,3 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
+* {
+    font-family: "Josefin Sans", sans-serif !important;
+    font-optical-sizing: auto !important;
+    font-weight: 300;
+    font-style: normal;
+
+    --text-color: #c7efcf;
+    --background-color: #578B8E;
+    --background-accent-color: #B084CC;
+    --main-color: #333745;
+    --accent-color: #190933;
+}
+
 html,
 body,
 #root {
@@ -6,10 +21,18 @@ body,
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 body {
-    background-color: whitesmoke;
+    /* A subtle gradient background makes the glass effect visible and modern */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .home-root {
@@ -26,7 +49,7 @@ body {
 .home-footer,
 .home-header {
     padding: 10px;
-    background-color: darkgray;
+    background-color: var(--main-color);
 }
 
 .home-content {
@@ -35,4 +58,31 @@ body {
 
 .home-content h1 {
     margin: 0;
+}
+
+.hero-img {
+    border-radius: 50%;
+    /* Ensures the image behaves like a block element inside its container */
+    display: block;
+}
+
+.hero-root {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem; /* Adds some space between the title and the avatar */
+    padding: 2rem 0;
+}
+
+.hero-img-container {
+    /* This container creates the glass effect around the image */
+    padding: 0.75rem; /* Space between the image and the glass edge */
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); /* For Safari */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: inline-block;
 }

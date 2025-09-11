@@ -1,16 +1,22 @@
 import React from 'react';
-import {Box} from "@mui/material";
+import {Box, Typography} from "@mui/material";
+import { Avatar } from '../components/common/Avatar';
 
 const Home = () => {
+    const userName = "Isabela Fartusnic";
 
     return (
         <Box className={"home-root"}>
             <Box className={"home-header"}>
-                Isabela Fartusnic
+                {userName}
             </Box>
 
             <Box className={"home-content"}>
-                <h1>Bun venit!</h1>
+                <Box className={"hero-root"}>
+                    <Typography variant="h1">{userName}</Typography>
+                    <Avatar seed={userName} size={256} glassEffect={true} />
+                </Box>
+
             </Box>
 
             <Box className={"home-footer"}>
