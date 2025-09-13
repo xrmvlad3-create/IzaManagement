@@ -13,19 +13,23 @@ import AiChat from '../Pages/AiChat';
 
 // Importăm componenta de protecție corectă (ProtectedRoute instead of PrivateRoute)
 import ProtectedRoute from './ProtectedRoute';
+import Header from "./general/Header";
+import Footer from "./general/Footer";
 
 const Root: React.FC = () => {
     return (
         <SpecialtyProvider>
             <Router>
+                <Header />
                 <Routes>
                     {/* --- Rute Publice --- */}
                     <Route path="/" element={<HomePage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
 
                     {/* --- Rute Protejate --- */}
                     <Route element={<ProtectedRoute />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
+
                         <Route path="/derm-conditions" element={<DermConditionsPage />} />
                         <Route path="/derm-conditions/:id" element={<DermConditionDetailPage />} />
                         <Route path="/clinical-cases" element={<ClinicalCasesPage />} />
@@ -35,6 +39,7 @@ const Root: React.FC = () => {
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
+                <Footer />
             </Router>
         </SpecialtyProvider>
     );

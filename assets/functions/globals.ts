@@ -6,3 +6,6 @@ export function doNothing()
 {
 
 }
+
+
+export const userName = "Isabela Fartusnic";

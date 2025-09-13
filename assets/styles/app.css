@@ -35,14 +35,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.home-root {
+#root {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.home-root > div:last-child {
+#root > div:last-child {
     margin-top: auto;
 }
 
