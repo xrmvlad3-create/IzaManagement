@@ -29,7 +29,6 @@ const Root: React.FC = () => {
 
                     {/* --- Rute Protejate --- */}
                     <Route element={<ProtectedRoute />}>
-
                         <Route path="/derm-conditions" element={<DermConditionsPage />} />
                         <Route path="/derm-conditions/:id" element={<DermConditionDetailPage />} />
                         <Route path="/clinical-cases" element={<ClinicalCasesPage />} />
